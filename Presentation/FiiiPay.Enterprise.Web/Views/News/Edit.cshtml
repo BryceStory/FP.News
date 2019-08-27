@@ -1,0 +1,615 @@
+﻿@using FiiiPay.Enterprise.Entities;
+@using FiiiPay.Enterprise.Web.Models;
+@{
+    ViewBag.Title = "Add";
+    ViewBag.PageName = Html.Resource("News", "NewsTitle");
+    List<NewsSetion> nsList = ViewBag.NewsSectionList as List<NewsSetion>;
+
+}
+
+@model News
+
+<link href="~/Plugins/ueditor-net/themes/iframe.css" rel="stylesheet" />
+<div class="pagebody" style="max-width:800px;">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class=" col-sm-2 control-label required" for="Title">@Html.Resource("News", "Version")</label>
+            <div class="col-sm-6 versionbtn">
+                <input type="button" name="checkversion" id="CN" class="btn btn-default selected" onclick="" value="@Html.Resource("News", "VersionCN")" />
+                <input type="button" name="checkversion" id="EN" class="btn btn-default" onclick="" value="@Html.Resource("News", "VersionEN")" />
+                <input type="hidden" name="newsversion" id="newsversion" value="" />
+            </div>
+        </div>
+    </div>
+
+    <form class="form-horizontal" id="AddNewsForm">
+        @Html.HiddenFor(t => t.Id)
+        @Html.HiddenFor(t => t.Status)
+        <input type="hidden" name="Version" id="Version" value="" />
+        <div id="CNDiv" hidden="hidden">
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("News", "Title")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.CNTitle, new { Class = "form-control", placeholder = "" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("News", "Intro")</label>
+                <div class="col-sm-10">
+                    <textarea name="CNIntro" id="CNIntro" class="form-control" style="height:160px;">@Model.CNIntro</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required">@Html.Resource("News", "Content")</label>
+                <input type="hidden" id="CNContent" name="CNContent" value="@Model.CNContent" />
+                <div class="col-sm-10">
+                    <script id="CNEditor" type="text/plain" style="width:100%;height:300px;margin-bottom:15px;">
+                    </script>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="NewsSetionId">@Html.Resource("News", "Section")</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(t => t.NewsSetionId, (List<SelectListItem>)ViewBag.CNNewsSectionList, new { Class = "form-control", placeholder = "" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("News", "Source")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.CNSource, new { Class = "form-control", placeholder = "", maxlength = "10" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="CNPublisher">@Html.Resource("News", "Publisher")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.CNPublisher, new { Class = "form-control", placeholder = "", maxlength = "10" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="CNPageView">@Html.Resource("News", "Pageviews")</label>
+                <div class="col-sm-10">
+                    <input type="number" name="CNPageView" id="CNPageView" value="@(Model.CNPageView)" class="form-control" placeholder="" min="0" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("News", "Keywords1")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.CNKeyword1, new { Class = "form-control", placeholder = "", maxlength = "20" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="Title">@Html.Resource("News", "Keywords2")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.CNKeyword2, new { Class = "form-control", placeholder = "", maxlength = "20" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-offset-2 col-sm-2 control-label required" style="text-align:left;">@Html.Resource("News", "CoverPlan")</label>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-offset-2 col-sm-10 control-label" style="color:dimgrey;font-size:smaller;text-align:left;">@Html.Resource("News", "CoverPlanRequire")</label>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-2 col-sm-2 control-label"></label>
+                <div class="col-lg-10 col-sm-10">
+                    <ul class="list-inline" id="CNCoverPictureList">
+                        @if (!string.IsNullOrWhiteSpace(Model.CNCoverPictureUrl))
+                        {
+                            <li>
+                                <img src="@Model.CNCoverPictureUrl" />
+                                <input type="hidden" name="CNCoverPictureUrlList" id="CNCoverPictureUrlList" value="@Model.CNCoverPictureUrl" />
+                                <div class="CNCoverPicture"></div>
+                                <button type="button" class="close" aria-label="Close" title="删除"><span aria-hidden="true">&times;</span></button>
+                            </li>
+                        }
+
+
+                    </ul>
+                    <div>
+                        <a href="javascript:" onclick="UploadPicture()">
+                            <img src="~/Content/Images/loadupbk.png" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <input type="button" class="btn btn-primary" style="background-color:#3E82FE;" onclick="SubmitPublishNewsForm(@Model.Id,@((byte)NewsSubmitFormType.CNVersion),@((byte)NewsStatus.Published))" value="@Html.Resource("News", "PublishNews")" />
+                    <input type="button" class="btn" style="color:black;border:1px solid;border-color:#3B8EFF;background-color:white;" onclick="SubmitPublishNewsForm(@Model.Id,@((byte)NewsSubmitFormType.CNVersion),@((byte)NewsStatus.Saved))" value="@Html.Resource("News", "SaveDrafts")" />
+                </div>
+            </div>
+        </div>
+
+        <div id="ENDiv" hidden="hidden">
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("News", "Title")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.ENTitle, new { Class = "form-control", placeholder = "" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("News", "Intro")</label>
+                <div class="col-sm-10">
+                    <textarea name="ENIntro" id="ENIntro" class="form-control" style="height:160px;">@Model.ENIntro</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required">@Html.Resource("News", "Content")</label>
+                <input type="hidden" id="ENContent" name="ENContent" value="@Model.ENContent" />
+                <div class="col-sm-10">
+                    <script id="ENEditor" type="text/plain" style="width:100%;height:300px;margin-bottom:15px;">
+                    </script>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="NewsSetionId">@Html.Resource("News", "Section")</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(t => t.NewsSetionId, (List<SelectListItem>)ViewBag.ENNewsSectionList, new { Class = "form-control", placeholder = "" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("News", "Source")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.ENSource, new { Class = "form-control", placeholder = "", maxlength = "20" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="ENPublisher">@Html.Resource("News", "Publisher")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.ENPublisher, new { Class = "form-control", placeholder = "", maxlength = "10" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="ENPageView">@Html.Resource("News", "Pageviews")</label>
+                <div class="col-sm-10">
+                    <input type="number" name="ENPageView" id="ENPageView" value="@(Model.ENPageView)" class="form-control" placeholder="" min="0" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("News", "Keywords1")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.ENKeyword1, new { Class = "form-control", placeholder = "", maxlength = "20" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="Title">@Html.Resource("News", "Keywords2")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.ENKeyword2, new { Class = "form-control", placeholder = "", maxlength = "20" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-offset-2 col-sm-2 control-label required" style="text-align:left;">@Html.Resource("News", "CoverPlan")</label>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-offset-2 col-sm-10 control-label" style="color:dimgrey;font-size:smaller;text-align:left;">@Html.Resource("News", "CoverPlanRequire")</label>
+            </div>
+
+            <div class="form-group">
+                <label class="col-lg-2 col-sm-2 control-label"></label>
+                <div class="col-lg-10 col-sm-10">
+                    <ul class="list-inline" id="ENCoverPictureList">
+                        @if (!string.IsNullOrWhiteSpace(Model.ENCoverPictureUrl))
+                        {
+                            <li>
+                                <img src="@Model.ENCoverPictureUrl" />
+                                <input type="hidden" name="ENCoverPictureUrlList" id="ENCoverPictureUrlList" value="@Model.ENCoverPictureUrl" />
+                                <div class="ENCoverPicture"></div>
+                                <button type="button" class="close" aria-label="Close" title="删除"><span aria-hidden="true">&times;</span></button>
+                            </li>
+                        }
+
+                    </ul>
+                    <div>
+                        <a href="javascript:" onclick="UploadPicture()">
+                            <img src="~/Content/Images/loadupbk.png" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <input type="button" class="btn btn-primary" style="background-color:#3E82FE;" onclick="SubmitPublishNewsForm(@Model.Id,@((byte)NewsSubmitFormType.ENVersion),@((byte)NewsStatus.Published))" value="@Html.Resource("News", "PublishNews")" />
+                    <input type="button" class="btn" style="color:black;border:1px solid;border-color:#3B8EFF;background-color:white;" onclick="SubmitPublishNewsForm(@Model.Id,@((byte)NewsSubmitFormType.ENVersion),@((byte)NewsStatus.Saved))" value="@Html.Resource("News", "SaveDrafts")" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+
+        //初始化富文本编辑器
+        var CNue = UE.getEditor('CNEditor');
+        var ENue = UE.getEditor('ENEditor');
+        var CNueContent = $("#CNContent").val();
+        var ENueContent = $("#ENContent").val();
+        CNue.ready(function () { CNue.setContent(CNueContent) });
+        ENue.ready(function () { ENue.setContent(ENueContent) });
+
+        //获取初始化默认的新闻版本
+        if ($(".versionbtn input").hasClass('selected')) {
+            var defaultVer = $(".selected").attr("id");
+            $("#newsversion").val(defaultVer);
+            $("#" + defaultVer + "Div").removeAttr("hidden");
+        }
+        //点击切换新闻版本
+        $(".versionbtn input").click(function () {
+            var id = $(this).attr("id");
+            $(this).addClass('selected').siblings().removeClass('selected');
+            if (id == "CN") {
+                $("#CNDiv").removeAttr("hidden");
+                $("#ENDiv").attr("hidden", "hidden");
+            } else {
+                $("#ENDiv").removeAttr("hidden");
+                $("#CNDiv").attr("hidden", "hidden");
+            }
+            if ($(".versionbtn input").hasClass('selected')) {
+                $("#newsversion").val(id);
+            }
+        });
+
+         $("#CNCoverPictureList").on("click", ">li .close", function () {
+            $(this).closest("li").remove();
+         });
+
+         $("#ENCoverPictureList").on("click", ">li .close", function () {
+            $(this).closest("li").remove();
+         });
+    });
+
+    function SubmitPublishNewsForm(id, version, status) {
+
+        //type ：  CN：中文版 EN：英文版
+         $("#Status").val(status);
+        $("#Version").val(version);
+        $("#CNContent").val(UE.getEditor('CNEditor').getContent());
+        $("#ENContent").val(UE.getEditor('ENEditor').getContent());
+
+        if (version == @((byte)NewsSubmitFormType.CNVersion)) {
+            if ($("#CNTitle").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "标题未填写",
+                    type: "warning"
+                });
+                return;
+            }
+             if ($("#CNIntro").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "新闻简介未填写",
+                    type: "warning"
+                });
+                return;
+            }
+            if ($("#CNIntro").val().trim().length > 800) {
+                swal({
+                    title: "",
+                    text: "新闻简介不能超过800个字",
+                    type: "warning"
+                });
+                return;
+            }
+            if (UE.getEditor('CNEditor').getContent().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "正文未填写",
+                    type: "warning"
+                });
+                return;
+            }
+
+            var a = $("#NewsSetionId").val().trim();
+            if ($("#NewsSetionId").val().trim().length==0) {
+                swal({
+                    title: "",
+                    text: "请选择所属专栏",
+                    type: "warning"
+                });
+                return;
+            }
+            if ($("#CNSource").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "来源未填写",
+                    type: "warning"
+                });
+                return;
+            }
+            // if ($("#CNPublisher").val().trim().length == 0) {
+            //    swal({
+            //        title: "",
+            //        text: "发布人未填写",
+            //        type: "warning"
+            //    });
+            //    return;
+            //}
+            if ($("#CNKeyword1").val().trim().length == 0 && $("#CNKeyword2").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "至少填写一个关键词",
+                    type: "warning"
+                });
+                return;
+            }
+
+            var arrCNCoverPictureId = $("input[name='CNCoverPictureUrlList']");
+            if (arrCNCoverPictureId.length > 1 || arrCNCoverPictureId.length==0) {
+                 swal({
+                    title: "",
+                    text: "图片不能为空且只能上传1张图片",
+                    type: "warning"
+                });
+                return;
+            }
+        }
+        if (version == @((byte)NewsSubmitFormType.ENVersion)) {
+            if ($("#ENTitle").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "标题未填写",
+                    type: "warning"
+                });
+                return;
+            }
+             if ($("#ENIntro").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "新闻简介未填写",
+                    type: "warning"
+                });
+                return;
+            }
+             if ($("#ENIntro").val().trim().length > 1600) {
+                swal({
+                    title: "",
+                    text: "新闻简介不能超过1600字符",
+                    type: "warning"
+                });
+                return;
+            }
+            if (UE.getEditor('ENEditor').getContent().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "正文未填写",
+                    type: "warning"
+                });
+                return;
+            }
+            if ($("#ENSource").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "来源未填写",
+                    type: "warning"
+                });
+                return;
+            }
+            // if ($("#ENPublisher").val().trim().length == 0) {
+            //    swal({
+            //        title: "",
+            //        text: "发布人未填写",
+            //        type: "warning"
+            //    });
+            //    return;
+            //}
+            if ($("#ENKeyword1").val().trim().length == 0 && $("#ENKeyword2").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "至少填写一个关键词",
+                    type: "warning"
+                });
+                return;
+            }
+            debugger;
+            var arrENCoverPictureId = $("input[name='ENCoverPictureUrlList']");
+            if (arrENCoverPictureId.length > 1 || arrENCoverPictureId.length==0) {
+                 swal({
+                    title: "",
+                    text: "图片不能为空且只能上传1张图片",
+                    type: "warning"
+                });
+                return;
+            }
+        }
+        debugger;
+        var postdata = getFromData(id, version, status);
+        $.ajax({
+            url: '/News/SavePublishNews',
+            data: postdata,
+            //data: { postdata, csrfmiddlewaretoken:'{{ csrf_token }}'},
+            type: "POST",
+            dataType: "json",
+            contentType: "application/json",
+            success: function (context) {
+
+                if (context.Status) {
+                    swal({
+                        title: "保存成功",
+                        type: "success"
+                    }, function () {
+                            $("#Id").val(context);
+                             window.location.href = "/" + BaseFunction.GetLanguage() + "/News/Index";
+                    });
+                }
+                else {
+                    swal({
+                        title: "保存失败",
+                        type: "error",
+                        text: context.Message
+                    });
+                }
+            }
+        })
+
+    }
+
+    function getFromData(id, version, status) {
+        debugger;
+        var cnarr = new Array();
+        var enarr = new Array();
+
+        $("input[name='ENCoverPictureUrlList']").each(function () {
+            enarr.push($(this).val());
+        });
+        $("input[name='CNCoverPictureUrlList']").each(function () {
+            cnarr.push($(this).val());
+        });
+        var smodel = new Object();
+        smodel.Id = id;
+        smodel.Version = version;
+        smodel.status = status;
+        smodel.CNTitle = $("#CNTitle").val();
+        smodel.ENTitle = $("#ENTitle").val();
+        smodel.CNSource = $("#CNSource").val();
+        smodel.ENSource = $("#ENSource").val();
+        smodel.CNKeyword1 = $("#CNKeyword1").val();
+        smodel.CNKeyword2 = $("#CNKeyword2").val();
+        smodel.ENKeyword1 = $("#ENKeyword1").val();
+        smodel.ENKeyword2 = $("#ENKeyword2").val();
+        smodel.NewsSetionId = $("#NewsSetionId").val();
+        smodel.CNPageView = $("#CNPageView").val();
+        smodel.ENPageView = $("#ENPageView").val();
+
+        smodel.CNPublisher = $("#CNPublisher").val();
+        smodel.ENPublisher = $("#ENPublisher").val();
+        smodel.CNIntro = $("#CNIntro").val();
+        smodel.ENIntro = $("#ENIntro").val();
+
+        smodel.CNCoverPictureUrlList = cnarr;
+        smodel.ENCoverPictureUrlList = enarr;
+        smodel.CNContent = $("#CNContent").val();
+        smodel.ENContent = $("#ENContent").val();
+
+        return JSON.stringify({ model: smodel });
+    }
+
+    //上传封面图片
+    function UploadPicture() {
+        $.openmodalpage("UploadPicture", "/News/UploadPicture", {}, "上传广告图", "big");
+    }
+
+    function CloseUploadPicturePage() {
+        $.closemodalpage("UploadPicture");
+    }
+
+     function GetCoverImageCount() {
+        if (!$("#CNDiv").is(":hidden")) {
+            return $("#CNCoverPictureUrlList").children().length;
+        } else {
+            return $("#ENCoverPictureUrlList").children().length;
+        }
+    }
+
+    function UploadPictureSuccess(file, response) {
+
+        var url = response.url;
+        if (url) {
+            if (!$("#CNDiv").is(":hidden")) {
+               $li = $('<li></li>');
+                 $img = $('<img />').appendTo($li);
+                 $idtxt = $('<input type="hidden" name="CNCoverPictureUrlList" />').appendTo($li);
+                 var specialtitlehtml = '<div class="CNCoverPicture"></div>';
+                 specialtitlehtml += '<button type="button" class="close" aria-label="Close" title="删除"><span aria-hidden="true">&times;</span></button>';
+                 $li.append(specialtitlehtml);
+
+                $img.attr("src", response.url);
+                $idtxt.val(response.url);
+
+                $("#CNCoverPictureList").append($li);
+            } else {
+                 $li = $('<li></li>');
+                 $img = $('<img />').appendTo($li);
+                 $idtxt = $('<input type="hidden" name="ENCoverPictureUrlList" />').appendTo($li);
+                 var specialtitlehtml = '<div class="ENCoverPicture"></div>';
+                 specialtitlehtml += '<button type="button" class="close" aria-label="Close" title="删除"><span aria-hidden="true">&times;</span></button>';
+                 $li.append(specialtitlehtml);
+
+                $img.attr("src", response.url);
+                $idtxt.val(response.url);
+
+                $("#ENCoverPictureList").append($li);
+            }
+        }
+    }
+
+</script>
+
+<style>
+    #CNCoverPictureList > li {
+        width: 420px;
+        height: 315px;
+        padding: 0;
+        margin-right: 15px;
+        position: relative;
+    }
+
+        #CNCoverPictureList > li img {
+            max-width: 100%;
+            height: 300px;
+            border: solid 1px #ddd;
+        }
+
+        #CNCoverPictureList > li .close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: darkred;
+            z-index: 100;
+            opacity: 0.8;
+            filter: Alpha(opacity=80);
+        }
+
+        #CNCoverPictureList > li .CNCoverPicture {
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin: 0;
+            height: 35px;
+            background-color: #fff;
+            opacity: 0.5;
+            filter: Alpha(opacity=50);
+            z-index: 99;
+            width: 100%;
+        }
+
+    #ENCoverPictureList > li {
+        width: 420px;
+        height: 315px;
+        padding: 0;
+        margin-right: 15px;
+        position: relative;
+    }
+
+        #ENCoverPictureList > li img {
+            max-width: 100%;
+            height: 300px;
+            border: solid 1px #ddd;
+        }
+
+        #ENCoverPictureList > li .close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: darkred;
+            z-index: 100;
+            opacity: 0.8;
+            filter: Alpha(opacity=80);
+        }
+
+        #ENCoverPictureList > li .ENCoverPicture {
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin: 0;
+            height: 35px;
+            background-color: #fff;
+            opacity: 0.5;
+            filter: Alpha(opacity=50);
+            z-index: 99;
+            width: 100%;
+        }
+</style>

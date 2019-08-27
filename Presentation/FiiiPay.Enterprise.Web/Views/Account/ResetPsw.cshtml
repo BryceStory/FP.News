@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "ResetPsw";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model FiiiPay.Enterprise.Web.Models.ResetPasswordViewModel
+<div class="f-page">
+    <h3 class="f-sub-pagename">@Html.Resource("AccountResetPsw", "SubPagename")</h3>
+    <hr />
+    @using (Html.BeginForm("ResetPsw", "Account", new { lang = ViewBag.WebLanguage }, FormMethod.Post, new { role = "form",style="max-width:380px;" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            @Html.LabelFor(t => t.OldPassword)
+            @Html.PasswordFor(t => t.OldPassword, new { @class = "form-control", placeholder = Html.Resource("AccountResetPsw", "OldPasswordPlaceholder") })
+            @Html.ValidationMessageFor(m => m.OldPassword, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(t => t.NewPassword)
+            @Html.PasswordFor(t => t.NewPassword, new { @class = "form-control", placeholder = Html.Resource("AccountResetPsw", "NewPasswordPlaceholder") })
+            @Html.ValidationMessageFor(m => m.NewPassword, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(t => t.ConfirmNewPassword)
+            @Html.PasswordFor(t => t.ConfirmNewPassword, new { @class = "form-control", placeholder = Html.Resource("AccountResetPsw", "ConfirmNewPasswordPlaceholder") })
+            @Html.ValidationMessageFor(m => m.ConfirmNewPassword, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group" style="margin-top:20px;">
+            <input class="f-btn f-btn-normal" type="submit" value="@Html.Resource("GeneralResource", "BtnConfirm")" />
+        </div>
+    }
+</div>
+<script>
+    $(function () {
+        var hasset = "@ViewBag.PasswordHasSet";
+        if (hasset === "1") {
+            swal({
+                title: BaseFunction.getresource("accountresetpsw", "setsuccess"),
+                text: BaseFunction.getresource("accountresetpsw", "setsuccessmessage"),
+                type: 'success'
+            }, function () {
+                var lang = BaseFunction.GetLanguage();
+                window.location.href = "/" + lang + "/login";
+            });
+        }
+    });
+</script>

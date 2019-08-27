@@ -1,0 +1,173 @@
+﻿@using FiiiPay.Enterprise.Entities;
+@using FiiiPay.Enterprise.Web.Models;
+
+@model Account
+
+@{
+    ViewBag.Title = "EditAccount";
+    ViewBag.PageName = Html.Resource("AccountCommon", "AccountCreate");
+    bool IsCreate = Model.Id == Guid.Empty;
+}
+
+
+<link href="~/Content/page.css" rel="stylesheet" />
+<div class="pagebody" style="max-width:800px;">
+    <form class="form-horizontal" id="EditAccountForm">
+        @Html.HiddenFor(t => t.Id)
+
+        <div class="form-group">
+
+            @if (IsCreate)
+            {
+                <label class="col-sm-2 control-label" for="Title"><span style="font-size:150%;color:red;margin: 0 3px 0 0;vertical-align: top;">*</span>@Html.Resource("AccountCommon", "Username")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.Username, new { Class = "form-control", placeholder = "" })
+                </div>
+            }
+            else
+            {
+                <label class="col-sm-2 control-label" for="Title">@Html.Resource("AccountCommon", "Username")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.Username, new { Class = "form-control", disabled = "disabled " })
+                </div>
+            }
+        </div>
+        @if (IsCreate)
+        {
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="Title"><span style="font-size:150%;color:red;margin: 0 3px 0 0;vertical-align: top;">*</span>@Html.Resource("AccountCommon", "Password")</label>
+                <div class="col-sm-10">
+                    @Html.PasswordFor(t => t.Password, new { Class = "form-control", placeholder = "" })
+                </div>
+            </div>
+        }
+        else
+        {
+            @Html.HiddenFor(t => t.Password)
+        }
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="Title">@Html.Resource("AccountCommon", "MerchantName")</label>
+            @if (IsCreate)
+            {
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.MerchantName, new { Class = "form-control", placeholder = "" })
+                </div>
+            }
+            else
+            {
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.MerchantName, new { Class = "form-control", disabled = "disabled " })
+                </div>
+            }
+
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="Title">@Html.Resource("AccountCommon", "Cellphone")</label>
+            <div class="col-sm-10">
+                <input type="number" name="Cellphone" id="Cellphone" class="form-control" value="@Model.Cellphone" oninput="if (value.length) value = value.slice(0,11)" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label" for="Title">@Html.Resource("AccountCommon", "Email")</label>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(t => t.Email, new { Class = "form-control", placeholder = "" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2">
+                <input type="button" class="btn btn-primary" style="background-color:#3E82FE;" onclick="SaveAccount('@Model.Id')" value="@Html.Resource("AccountCommon", "Submit")" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+
+    });
+
+    function SaveAccount(id) {
+        debugger;
+        if ($("#Username").val().trim().length == 0) {
+            swal({
+                title: "",
+                text: "用户名未填写",
+                type: "warning"
+            });
+            return;
+        }
+
+
+        if ($("#Password").val().trim().length == 0) {
+            swal({
+                title: "",
+                text: "密码未填写",
+                type: "warning"
+            });
+            return;
+        }
+
+        if ($("#Email").val().trim().length > 0) {
+            if (!emailCheck($("#Email").val())) {
+                swal({
+                    title: "",
+                    text: "邮箱格式不正确",
+                    type: "warning"
+                });
+                return;
+            }
+        }
+
+
+        var postdata = getFromData(id);
+        $.ajax({
+            url: "/Account/Save",
+            type: "post",
+            data: postdata,
+            dataType: "json",
+            //contentType: "application/x-www-form-urlencoded",
+            contentType: "application/json",
+            success: function (context) {
+                if (context.Status) {
+                    swal({
+                        title: "保存成功",
+                        type: "success"
+                    }, function () {
+                             window.location.href = "/" + BaseFunction.GetLanguage() + "/Account/Index";
+                    });
+                }
+                else {
+                    swal({
+                        title: "Save Failed",
+                        text: context.Message,
+                        type: "error"
+                    });
+                }
+            }
+        });
+    }
+
+    function emailCheck(emailStr) {
+        var pattern = /^([\.a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/;
+        if (!pattern.test(emailStr)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function getFromData(id) {
+        debugger;
+        var account = new Object();
+        account.Id = id;
+        account.Username = $("#Username").val();
+        account.Password = $("#Password").val();
+        account.MerchantName = $("#MerchantName").val();
+        // account.RoleId = $("#RoleId").children(":selected").val();
+        account.Cellphone = $("#Cellphone").val();
+        account.Email = $("#Email").val();
+        return JSON.stringify({ oAccount: account });
+    }
+
+</script>

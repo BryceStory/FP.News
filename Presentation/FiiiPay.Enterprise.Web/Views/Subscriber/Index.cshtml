@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewBag.Title = "Home Page";
+    ViewBag.PageName = Html.Resource("Subscriber","PageName");
+}
+
+<div class="col-md-1 col-md-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("Subscriber","Email")</p></div>
+</div>
+<div class="col-sm-offset col-sm-2 col-xs-10 margininput">
+    <input type="text" id="Email" name="Email" class="form-control" placeholder="" />
+</div>
+
+<div class="col-sm-offset col-sm-6 col-xs-12 butsubmit">
+    <input type="submit" class="f-btn" value="@Html.Resource("Common","Search")" onclick="GetSystemnotice()" />
+</div>
+<table class="table" id="SubscriberTb"></table>
+
+<script>
+    $(function () {
+
+        var colmodel = ([
+            { name: "Id", title: "User Id", titlecn: "用户Id" , width: 10},
+            { name: "Email", title: "Email", titlecn: "邮箱地址", width: 80 },          
+            { name: "CreateTime", title: "CreateTime", titlecn: "创建时间", width: 60 },         
+        ]);
+
+        $("#SubscriberTb").gridpager({
+            url: "~/Subscriber/LoadData",
+            colmodel: colmodel
+        });
+    });
+
+
+    function GetSystemnotice() {
+        var Email = $.trim($("#Email").val());
+        $("#SubscriberTb").gridpager('refresh', { Email: Email });
+    }
+</script>

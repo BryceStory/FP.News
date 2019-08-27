@@ -1,0 +1,163 @@
+﻿
+@{
+    ViewBag.Title = "Home Page";
+    ViewBag.PageName = Html.Resource("NewsFlash","FlashPageName");
+}
+
+@model FiiiPay.Enterprise.Web.Models.NewsFlashViewModel
+<div class="col-md-1 col-md-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("NewsFlash", "Title")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <input type="text" id="Title" name="Title" class="form-control" placeholder="" />
+</div>
+
+<div class="col-sm-offset col-sm-6 col-xs-12 butsubmit">
+    <input type="submit" class="f-btn" value="@Html.Resource("NewsFlash", "Search")" onclick="GetSystemnotice()" />
+    <input type="submit" class="f-btn" value="@Html.Resource("NewsFlash", "ReleaseFlash")" onclick="GoAdd()" />
+</div>
+
+<table class="table" id="NewsTb"></table>
+<script>
+    $(function () {
+
+        var colmodel = ([
+            { name: "Id", title: "Id", titlecn: "文章Id", hidden: true },
+            { name: "CNTitle", title: "Chinese Title", titlecn: "中文标题", width: 20 },
+            { name: "ENTitle", title: "English Title", titlecn: "英文标题", width: 20 },
+            { name: "CNPageView", title: "Chinese PageView", titlecn: "中文版浏览量", width: 10 },
+            { name: "ENPageView", title: "English PageView", titlecn: "英文版浏览量", width: 10 },
+            {
+                name: "Status", title: "Status", titlecn: "展示状态", formatter: function (v) {
+                    return '<a>' + (v == 0 ? '<span style="color:#606266 !important;">@Html.Resource("Common","Saved")</span>' : (v == 1 ? '<span style="color:#337ab7;">@Html.Resource("Common","Published")</span>' : '<span style="color:red;">@Html.Resource("Common","Unpublished")</span>')) + '</a>';
+                }
+            },
+            { name: "CreateTime", title: "CreateTime", titlecn: "创建时间", width: 20 },
+            {
+                name: "Operate", title: "Operate", titlecn: "操作", formatter: function (k, rowdata) {
+              
+                    var result = '<a  href="javascript:"' + (k == 1 ? 'style="pointer-events:none;color:#606266 !important;"' : '')
+                        + ' onclick="GoEdit(\'' + rowdata.Id + '\')">@Html.Resource("Common","Edit")</a> <a href="javascript:" ' + (k == 1 ? 'onclick = "GoUnpublished(\'' + rowdata.Id + '\')" > @Html.Resource("Common","GoUnpublished")' : 'onclick = "GoPublished(\'' + rowdata.Id + '\')" > @Html.Resource("Common","GoPublished")')
+                        + '</a >  <a href="javascript:"  onclick="GoDelete(\'' + rowdata.Id + '\')">@Html.Resource("Common","Delete")</a>';
+
+                    return result;
+                }
+            }
+        ]);
+
+        $("#NewsTb").gridpager({
+            url: "~/NewsFlash/LoadData",
+            colmodel: colmodel
+        });
+    });
+
+
+    function GetSystemnotice() {
+        var Title = $.trim($("#Title").val());
+        var Status = $.trim($("#Status").val());
+        $("#NewsTb").gridpager('refresh', { Title: Title, Status: Status });
+    }
+
+    function GoAdd() {
+         window.location.href = "/" + BaseFunction.GetLanguage() + "/NewsFlash/Edit?Id=-1";
+
+    }
+
+    function GoEdit(id) {
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/NewsFlash/Edit?Id=" + id;
+    }
+
+    function GoUnpublished(id) {
+        $.swconfirm("确定下架快讯？", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/NewsFlash/Unpublished',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "下架成功",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+                          
+                            swal({
+                                title: "下架失败",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+    function GoPublished(id) {
+        $.swconfirm("确定上架快讯？", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/NewsFlash/Published',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "上架成功",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+                       
+                            swal({
+                                title: "上架失败",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+    function GoDelete(id) {
+        $.swconfirm("确定删除新闻？", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/NewsFlash/Delete',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "删除成功",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+                       
+                            swal({
+                                title: "删除失败",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+</script>
+

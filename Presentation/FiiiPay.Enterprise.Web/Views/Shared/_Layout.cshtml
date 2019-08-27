@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/js")
+    @Scripts.Render("~/bundles/basefunction")
+    @Scripts.Render("~/bundles/plugins")
+    @Scripts.Render("~/bundles/fiiiextend")
+    @Scripts.Render("~/bundles/resource")
+</head>
+<body>
+    <div class="container-fluid f-container">
+        <div class="app">
+            <div class="app-wrap">
+                <header class="app-heading"></header>
+                <div class="app-container">
+                    <aside class="app-side is-open" id="app-side" aria-expanded=false>
+                        <div class="side-heading"></div>
+                        <div class="side-content">
+                            <nav class="side-nav">
+                                @Html.Partial("_Moduls", FiiiPay.Enterprise.Web.Utils.Modules.GetModules())
+                            </nav>
+                        </div>
+                        <footer class="side-footer"></footer>
+                    </aside>
+                    <div class="app-main">
+                        <header class="main-heading">
+                            <div class="clearfix">
+                                <div class="pull-left f-frame-toggler">
+                                    <a class="onoffcanvas-toggler is-animated" href="#app-side" data-toggle="onoffcanvas"></a>
+                                </div>
+                                <div class="pull-right f-frame-righttop">
+                                    @Html.Partial("_LoginPartial")
+                                </div>
+                            </div>
+                        </header>
+                        <div class="main-content">
+                            <div class="f-pagetitle">@ViewBag.PageName</div>
+                            <div class="f-pagecontent">@RenderBody()</div>
+                        </div>
+                        <footer class="main-footer"></footer>
+                    </div>
+                </div>
+                <footer class="app-footer"></footer>
+            </div>
+        </div>
+    </div>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

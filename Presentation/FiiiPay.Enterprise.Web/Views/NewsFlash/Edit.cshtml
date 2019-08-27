@@ -1,0 +1,567 @@
+﻿@using FiiiPay.Enterprise.Entities;
+@using FiiiPay.Enterprise.Web.Models;
+@{
+    ViewBag.Title = "Add";
+    ViewBag.PageName = Html.Resource("NewsFlash", "FlashTitle");
+    List<NewsFlashFiles> CPlist = ViewBag.CoverPictureList as List<NewsFlashFiles>;
+    var Pathbase = ViewBag.Pathbase;
+}
+
+@model NewsFlash
+
+
+<div class="pagebody" style="max-width:800px;">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class=" col-sm-2 control-label required" for="Title">@Html.Resource("NewsFlash", "Version")</label>
+            <div class="col-sm-6 versionbtn">
+                <input type="button" name="checkversion" id="CN" class="btn btn-default selected" onclick="" value="@Html.Resource("NewsFlash", "VersionCN")" />
+                <input type="button" name="checkversion" id="EN" class="btn btn-default" onclick="" value="@Html.Resource("NewsFlash", "VersionEN")" />
+                <input type="hidden" name="newsversion" id="newsversion" value="" />
+            </div>
+        </div>
+
+    </div>
+
+    <form class="form-horizontal" id="CNAddNewsForm">
+
+        @Html.HiddenFor(t => t.Id)
+        @Html.HiddenFor(t => t.Status)
+        <input type="hidden" name="Version" id="Version" value="" />
+        <div id="CNDiv" hidden="hidden">
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("NewsFlash", "Title")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.CNTitle, new { Class = "form-control", placeholder = "" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("NewsFlash", "Content")</label>
+                <div class="col-sm-10">
+                    <textarea name="CNContent" id="CNContent" class="form-control" style="height:200px;">@Model.CNContent</textarea>
+                </div>
+            </div>
+
+            @*<div class="form-group">
+                    <label class="col-sm-2 control-label"></label>
+                    <input type="hidden" id="CNContent" name="CNContent" value="@Model.CNContent" />
+                    <div class="col-sm-10">
+                        <script id="CNEditor" type="text/plain" style="width:100%;height:300px;margin-bottom:15px;">
+                        </script>
+                    </div>
+                </div>*@
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("NewsFlash", "Source")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.CNSource, new { Class = "form-control", placeholder = "", maxlength = "10" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="CNGood">@Html.Resource("NewsFlash", "PositiveNumber")</label>
+                <div class="col-sm-10">
+                    <input type="number" name="CNGood" id="CNGood" value="@(Model.CNGood)" class="form-control" placeholder="" min="0" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="CNBad">@Html.Resource("NewsFlash", "NegativeNumber")</label>
+                <div class="col-sm-10">
+                    <input type="number" name="CNBad" id="CNBad" value="@(Model.CNBad)" class="form-control" placeholder="" min="0" />
+                </div>
+            </div>
+
+
+            @*快讯的详情图等相关信息已隐藏（中文版和英文版）*@
+            <div class="form-group" style="display:none;">
+                <label class="col-sm-offset-2 col-sm-2 control-label" style="text-align:left;">@Html.Resource("NewsFlash", "Version")</label>
+            </div>
+            <div class="form-group" style="display:none;">
+                <label class="col-sm-offset-2 col-sm-10 control-label" style="color:dimgrey;font-size:smaller;text-align:left;">上传尺寸为195x140PX的jpg/png文件（图片宽高比例7:5），建议1M以下，最多可上传2张</label>
+            </div>
+            <div class="form-group" style="display:none;">
+                <label class="col-lg-2 col-sm-2 control-label"></label>
+                <div class="col-lg-10 col-sm-10">
+                    <ul class="list-inline" id="CNCoverPictureList">
+                        @if (CPlist != null)
+                        {
+                            foreach (var item in CPlist)
+                            {
+                                if (item.Version == FlashVersion.CN)
+                                {
+                                    <li>
+                                        <img src="@item.CoverPictureUrl" />
+                                        <input type="hidden" name="CNCoverPictureUrlList" id="CNCoverPictureUrlList" value="@item.CoverPictureUrl" />
+                                        <div class="CNCoverPicture"></div>
+                                        <button type="button" class="close" aria-label="Close" title="删除"><span aria-hidden="true">&times;</span></button>
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+                    <div>
+                        <a href="javascript:" onclick="UploadPicture()">
+                            <img src="~/Content/Images/loadupbk.png" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <input type="button" class="btn btn-primary" style="background-color:#3E82FE;" onclick="SubmitPublishNewsForm(@Model.Id,@((byte)FlashVersion.CN),@((byte)NewsFlashStatus.Published))" value="@Html.Resource("NewsFlash", "PublishFlash")" />
+                    <input type="button" class="btn" style="color:black;border:1px solid;border-color:#3B8EFF;background-color:white;" onclick="SubmitPublishNewsForm(@Model.Id,@((byte)FlashVersion.CN),@((byte)NewsFlashStatus.Saved))" value="@Html.Resource("NewsFlash", "SaveDrafts")" />
+                </div>
+            </div>
+        </div>
+
+        <div id="ENDiv" hidden="hidden">
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("NewsFlash", "Title")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.ENTitle, new { Class = "form-control", placeholder = "" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("NewsFlash", "Content")</label>
+                <div class="col-sm-10">
+                    <textarea name="ENContent" id="ENContent" class="form-control" style="height:200px;">@Model.ENContent</textarea>
+                </div>
+            </div>
+
+            @*<div class="form-group">
+                    <label class="col-sm-2 control-label"></label>
+                    <input type="hidden" id="ENContent" name="ENContent" value="@Model.ENContent" />
+                    <div class="col-sm-10">
+                        <script id="ENEditor" type="text/plain" style="width:100%;height:300px;margin-bottom:15px;">
+                        </script>
+                    </div>
+                </div>*@
+            <div class="form-group">
+                <label class="col-sm-2 control-label required" for="Title">@Html.Resource("NewsFlash", "Source")</label>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(t => t.ENSource, new { Class = "form-control", placeholder = "", maxlength = "20" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="ENGood">@Html.Resource("NewsFlash", "PositiveNumber")</label>
+                <div class="col-sm-10">
+                    <input type="number" name="ENGood" id="ENGood" value="@(Model.ENGood)" class="form-control" placeholder="" min="0" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label " for="ENBad">@Html.Resource("NewsFlash", "NegativeNumber")</label>
+                <div class="col-sm-10">
+                    <input type="number" name="ENBad" id="ENBad" value="@(Model.ENBad)" class="form-control" placeholder="" min="0" />
+                </div>
+            </div>
+
+
+            <div class="form-group" style="display:none;">
+                <label class="col-sm-offset-2 col-sm-2 control-label" style="text-align:left;">详情图</label>
+            </div>
+            <div class="form-group" style="display:none;">
+                <label class="col-sm-offset-2 col-sm-10 control-label" style="color:dimgrey;font-size:smaller;text-align:left;">上传尺寸为195x140PX的jpg/png文件（图片宽高比例7:5），建议1M以下，最多可上传2张</label>
+            </div>
+
+            <div class="form-group" style="display:none;">
+                <label class="col-lg-2 col-sm-2 control-label"></label>
+                <div class="col-lg-10 col-sm-10">
+                    <ul class="list-inline" id="ENCoverPictureList">
+                        @if (CPlist != null)
+                        {
+                            foreach (var item in CPlist)
+                            {
+                                if (item.Version == FlashVersion.EN)
+                                {
+                                    ;
+                                    <li>
+                                        <img src="@item.CoverPictureUrl" />
+                                        <input type="hidden" name="ENCoverPictureUrlList" id="ENCoverPictureUrlList" value="@item.CoverPictureUrl" />
+                                        <div class="ENCoverPicture"></div>
+                                        <button type="button" class="close" aria-label="Close" title="删除"><span aria-hidden="true">&times;</span></button>
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+                    <div>
+                        <a href="javascript:" onclick="UploadPicture()">
+                            <img src="~/Content/Images/loadupbk.png" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <input type="button" class="btn btn-primary" style="background-color:#3E82FE;" onclick="SubmitPublishNewsForm(@Model.Id,@((byte)FlashVersion.EN),@((byte)NewsFlashStatus.Published))" value="@Html.Resource("NewsFlash", "PublishFlash")" />
+                    <input type="button" class="btn" style="color:black;border:1px solid;border-color:#3B8EFF;background-color:white;" onclick="SubmitPublishNewsForm(@Model.Id,@((byte)FlashVersion.EN),@((byte)NewsFlashStatus.Saved))" value="@Html.Resource("NewsFlash", "SaveDrafts")" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //初始化富文本编辑器
+        //var CNue = UE.getEditor('CNEditor', {
+        //    toolbars: [[
+        //        'fullscreen', 'source', '|', 'undo', 'redo', '|',
+        //        'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+        //        'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+        //        'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+        //        'directionalityltr', 'directionalityrtl', 'indent', '|',
+        //        'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+        //        'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+        //        'emotion', 'attachment', 'map', 'gmap', 'insertframe', 'insertcode', 'webapp', 'pagebreak', 'template', 'background', '|',
+        //        'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+        //        'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+        //        'print', 'preview', 'searchreplace', 'drafts', 'help'
+        //    ]]
+        //});
+        // var ENue = UE.getEditor('ENEditor', {
+        //    toolbars: [[
+        //        'fullscreen', 'source', '|', 'undo', 'redo', '|',
+        //        'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+        //        'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+        //        'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+        //        'directionalityltr', 'directionalityrtl', 'indent', '|',
+        //        'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+        //        'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+        //        'emotion', 'attachment', 'map', 'gmap', 'insertframe', 'insertcode', 'webapp', 'pagebreak', 'template', 'background', '|',
+        //        'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+        //        'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+        //        'print', 'preview', 'searchreplace', 'drafts', 'help'
+        //    ]]
+        // });
+
+        //var CNueContent = $("#CNContent").val();
+        //var ENueContent = $("#ENContent").val();
+        //CNue.ready(function () { CNue.setContent(CNueContent) });
+        //ENue.ready(function () { ENue.setContent(ENueContent) });
+
+        //获取初始化默认的快讯版本
+        if ($(".versionbtn input").hasClass('selected')) {
+            var defaultVer = $(".selected").attr("id");
+            $("#newsversion").val(defaultVer);
+            $("#" + defaultVer + "Div").removeAttr("hidden");
+        }
+        //点击切换快讯版本
+        $(".versionbtn input").click(function () {
+            var id = $(this).attr("id");
+            $(this).addClass('selected').siblings().removeClass('selected');
+            if (id == "CN") {
+                $("#CNDiv").removeAttr("hidden");
+                $("#ENDiv").attr("hidden", "hidden");
+            } else {
+                $("#ENDiv").removeAttr("hidden");
+                $("#CNDiv").attr("hidden", "hidden");
+            }
+            if ($(".versionbtn input").hasClass('selected')) {
+                $("#newsversion").val(id);
+            }
+        });
+
+         $("#CNCoverPictureList").on("click", ">li .close", function () {
+            $(this).closest("li").remove();
+         });
+
+         $("#ENCoverPictureList").on("click", ">li .close", function () {
+            $(this).closest("li").remove();
+         });
+    });
+
+
+      function GetFigureImageCount() {
+        return $("#ENCoverPictureIdsList").children().length;
+    }
+
+
+    function SubmitPublishNewsForm(id, version, status) {
+        //version ：  CN：中文版 EN：英文版
+        $("#Status").val(status);
+        $("#Version").val(version);
+        //$("#CNContent").val(UE.getEditor('CNEditor').getContent());
+        //$("#ENContent").val(UE.getEditor('ENEditor').getContent());
+
+        if (version == @((byte)FlashVersion.CN)) {
+            if ($("#CNTitle").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "标题未填写",
+                    type: "warning"
+                });
+                return;
+            }
+             if ($("#CNContent").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "正文未填写",
+                    type: "warning"
+                });
+                return;
+            }
+            if ($("#CNContent").val().trim().length > 350) {
+                swal({
+                    title: "",
+                    text: "正文不能超过350字",
+                    type: "warning"
+                });
+                return;
+            }
+
+            //if (UE.getEditor('CNEditor').getContent().trim().length == 0) {
+            //    swal({
+            //        title: "",
+            //        text: "正文未填写",
+            //        type: "warning"
+            //    });
+            //    return;
+            //}
+
+            //if (UE.getEditor('CNEditor').getContentTxt().trim().length > 350) {
+            //    swal({
+            //        title: "",
+            //        text: "正文不能超过350字",
+            //        type: "warning"
+            //    });
+            //    return;
+            //}
+            if ($("#CNSource").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "来源未填写",
+                    type: "warning"
+                });
+                return;
+            }
+
+            var arrCNCoverPictureId = $("input[name='CNCoverPictureUrlList']");
+            if (arrCNCoverPictureId.length > 1 ) {
+                 swal({
+                    title: "",
+                    text: "图片最多上传1张",
+                    type: "warning"
+                });
+                return;
+            }
+
+        }
+        if (version == @((byte)FlashVersion.EN)) {
+            if ($("#ENTitle").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "标题未填写",
+                    type: "warning"
+                });
+                return;
+            }
+            if ($("#ENContent").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "正文未填写",
+                    type: "warning"
+                });
+                return;
+            }
+            if ($("#ENContent").val().trim().length > 1200) {
+                swal({
+                    title: "",
+                    text: "正文不能超过1200字符",
+                    type: "warning"
+                });
+                return;
+            }
+            //if (UE.getEditor('ENEditor').getContent().trim().length == 0) {
+            //    swal({
+            //        title: "",
+            //        text: "正文未填写",
+            //        type: "warning"
+            //    });
+            //    return;
+            //}
+
+            // if (UE.getEditor('ENEditor').getContentTxt().trim().length > 1200) {
+            //    swal({
+            //        title: "",
+            //        text: "正文不能超过1200字符",
+            //        type: "warning"
+            //    });
+            //    return;
+            //}
+            if ($("#ENSource").val().trim().length == 0) {
+                swal({
+                    title: "",
+                    text: "来源未填写",
+                    type: "warning"
+                });
+                return;
+            }
+
+
+            var arrENCoverPictureId = $("input[name='ENCoverPictureUrlList']");
+            if (arrENCoverPictureId.length > 1) {
+                 swal({
+                    title: "",
+                    text: "图片最多上传1张",
+                    type: "warning"
+                });
+                return;
+            }
+        }
+        var postdata = $("#CNAddNewsForm").serialize();
+
+        $.ajax({
+            url: '/NewsFlash/SavePublishFlash',
+            type: "POST",
+            data: postdata,
+            dataType: "json",
+            contentType: 'application/x-www-form-urlencoded',
+            success: function (context) {
+                if (context.Status) {
+                    swal({
+                        title: "保存成功",
+                        type: "success"
+                    }, function () {
+                            $("#Id").val(context);
+                             window.location.href = "/" + BaseFunction.GetLanguage() + "/NewsFlash/Index";
+                    });
+                }
+                else {
+                    swal({
+                        title: "保存失败",
+                        type: "error",
+                        text: context.Message
+                    });
+                }
+            }
+        })
+
+    }
+
+    //上传封面图片
+    function UploadPicture() {
+        $.openmodalpage("UploadPicture", "/NewsFlash/UploadPicture", {}, "上传广告图", "big");
+    }
+
+    function CloseUploadPicturePage() {
+        $.closemodalpage("UploadPicture");
+    }
+
+    function GetCoverImageCount() {
+        if (!$("#CNDiv").is(":hidden")) {
+            return $("#CNCoverPictureUrlList").children().length;
+        } else {
+            return $("#ENCoverPictureUrlList").children().length;
+        }
+    }
+
+    function UploadPictureSuccess(file, response) {
+        var url = response.url;
+        if (url) {
+
+            if (!$("#CNDiv").is(":hidden")) {
+                 $li = $('<li></li>');
+                 $img = $('<img />').appendTo($li);
+                 $idtxt = $('<input type="hidden" name="CNCoverPictureUrlList" />').appendTo($li);
+                 var specialtitlehtml = '<div class="CNCoverPicture"></div>';
+                 specialtitlehtml += '<button type="button" class="close" aria-label="Close" title="删除"><span aria-hidden="true">&times;</span></button>';
+                 $li.append(specialtitlehtml);
+
+                $img.attr("src", response.url);
+                $idtxt.val(response.url);
+
+                $("#CNCoverPictureList").append($li);
+            } else {
+                 $li = $('<li></li>');
+                 $img = $('<img />').appendTo($li);
+                 $idtxt = $('<input type="hidden" name="ENCoverPictureUrlList" />').appendTo($li);
+                 var specialtitlehtml = '<div class="ENCoverPicture"></div>';
+                 specialtitlehtml += '<button type="button" class="close" aria-label="Close" title="删除"><span aria-hidden="true">&times;</span></button>';
+                 $li.append(specialtitlehtml);
+
+                $img.attr("src", response.url);
+                $idtxt.val(response.url);
+
+                $("#ENCoverPictureList").append($li);
+            }
+        }
+    }
+</script>
+
+<style>
+    #CNCoverPictureList > li {
+        width: 420px;
+        height: 315px;
+        padding: 0;
+        margin-right: 15px;
+        position: relative;
+    }
+
+        #CNCoverPictureList > li img {
+            max-width: 100%;
+            height: 300px;
+            border: solid 1px #ddd;
+        }
+
+        #CNCoverPictureList > li .close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: darkred;
+            z-index: 100;
+            opacity: 0.8;
+            filter: Alpha(opacity=80);
+        }
+
+        #CNCoverPictureList > li .CNCoverPicture {
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin: 0;
+            height: 35px;
+            background-color: #fff;
+            opacity: 0.5;
+            filter: Alpha(opacity=50);
+            z-index: 99;
+            width: 100%;
+        }
+
+    #ENCoverPictureList > li {
+        width: 420px;
+        height: 315px;
+        padding: 0;
+        margin-right: 15px;
+        position: relative;
+    }
+
+        #ENCoverPictureList > li img {
+            max-width: 100%;
+            height: 300px;
+            border: solid 1px #ddd;
+        }
+
+        #ENCoverPictureList > li .close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: darkred;
+            z-index: 100;
+            opacity: 0.8;
+            filter: Alpha(opacity=80);
+        }
+
+        #ENCoverPictureList > li .ENCoverPicture {
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin: 0;
+            height: 35px;
+            background-color: #fff;
+            opacity: 0.5;
+            filter: Alpha(opacity=50);
+            z-index: 99;
+            width: 100%;
+        }
+</style>
+

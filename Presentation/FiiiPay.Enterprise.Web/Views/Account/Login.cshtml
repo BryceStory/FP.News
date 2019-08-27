@@ -1,0 +1,129 @@
+﻿@{
+    Layout = null;
+}
+@model FiiiPay.Enterprise.Web.Models.LoginViewModel
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>FiiiPay Login</title>
+    @Styles.Render("~/Content/basecss")
+    @Styles.Render("~/Content/login.css", "~/Plugins/sweetalert/sweetalert.css", "~/Plugins/sweetalert/sweetalert.fiiienterprise.css")
+    @Scripts.Render("~/bundles/js")
+    @Scripts.Render("~/Plugins/sweetalert/sweetalert.min.js")
+    @Scripts.Render("~/bundles/basefunction")
+    @Scripts.Render("~/bundles/fiiiextend")
+    @Scripts.Render("~/bundles/resource")
+</head>
+<body>
+    <div class="container-fluid f-login-bg">
+        <div class="dropdown f-login-top">
+            <div class="f-login-language">
+                @{
+                    bool isZh = ViewBag.WebLanguage == "cn";
+                }
+                <a href="#" id="f-frame-language" data-lang="@ViewBag.WebLanguage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    @if (isZh)
+                    {
+                        <span>中文</span>
+                    }
+                    else
+                    {
+                        <span>English</span>
+                    }
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="language" style="left:-50px;">
+                    <li><a href="/en/login">English</a></li>
+                    <li><a href="/cn/login">中文</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="f-login-form">
+            <div class="f-login-input">
+                <div class="f-login-header"><p class="f-login-webname">@Html.Resource("AccountLogin", "PageName")</p></div>
+                <p class="f-login-pagename">@Html.Resource("AccountLogin", "PageFunction")</p>
+                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl, lang = ViewBag.WebLanguage }, FormMethod.Post, new { role = "form", onsubmit = "return checkinput()" }))
+                {
+                    string fbpswUrl = "/" + ViewBag.WebLanguage + "/account/fbpsw";
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+                    <div class="f-login-inputcontainor f-login-merchantid">
+                        @Html.TextBoxFor(t => t.MerchantId, new { placeholder = Html.Resource("AccountLogin", "MerchantIDPlaceholder") })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.MerchantId, "", new { @class = "text-danger" })
+                    <div class="f-login-inputcontainor f-login-password">
+                        @Html.PasswordFor(t => t.Password, new { placeholder = Html.Resource("AccountLogin", "PasswordPlaceholder") })
+                    </div>
+                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    @*<div class="clearfix f-login-forget">
+                        <div class="pull-left">
+                            <a href="#" onclick="forgetaccount()">@Html.Resource("AccountLogin", "ForgetAccount")</a>
+                        </div>
+                        <div class="pull-right">
+                            <a href="@fbpswUrl">@Html.Resource("AccountLogin", "ForgetPassword")</a>
+                         </div>
+                     </div>*@
+                 <div><input class="f-btn" id="submitbtn" type="submit" value="@Html.Resource("AccountLogin", "LoginBtn")" /></div>
+                }
+            </div>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            if (checkinput()) {
+                $("#submitbtn").removeClass("f-btn-disabled");
+            }
+            else {
+                $("#submitbtn").addClass("f-btn-disabled");
+            }
+            var timer = null;
+            $("#MerchantId").add("#Password").off("keyup").on("keyup", function () {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    var checkresult = checkinput();
+                    if (checkresult) {
+                        $("#submitbtn").removeClass("f-btn-disabled");
+                    }
+                    else {
+                        $("#submitbtn").addClass("f-btn-disabled");
+                    }
+                }, 250);
+            });
+        })
+        function checkinput() {
+            var id = $.trim($("#MerchantId").val());
+            var password = $.trim($("#Password").val());
+            if (id && password) {
+                return true;
+            }
+            return false;
+        }
+        function forgetaccount() {
+            swal({
+                title: '',
+                text: initnotice(BaseFunction.getresource("accountlogin", "accountnoticetext")),
+                html: true
+            });
+        }
+        function initnotice(title) {
+            var htmlStr = '<div>';
+            htmlStr += '<div class="f-alert-title">' + title + '</div>';
+            htmlStr += '<div class="f-alert-borders2 clearfix">';
+            htmlStr += '<div class="pull-left f-alert-border">';
+            htmlStr += '<p><span class="f-coin f-icon-phone"></span></p>';
+            htmlStr += '<p>+61 383 766 284</p>';
+            htmlStr += '</div>';
+            htmlStr += '<div class="pull-right f-alert-border">';
+            htmlStr += '<p><span class="f-coin f-icon-mail"></span></p>';
+            htmlStr += '<p>infosz@fiii.io</p>';
+            htmlStr += '</div>';
+            htmlStr += '</div></div>';
+            return htmlStr;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+﻿.f-containor-center {
+    width: 380px;
+    margin: 80px auto;
+}
+
+.versionbtn .selected {
+    background-color: #3E82FE;
+    color: white;
+    border-color: #3E82FE;
+}
+
+.form-group .required:before {
+    content: '*';
+    color: #ff0000;
+    font-size: 150%;
+    margin: 0 3px 0 0;
+    vertical-align: top;
+}

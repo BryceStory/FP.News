@@ -1,0 +1,45 @@
+﻿@model Dictionary<FiiiPay.Enterprise.Web.Models.WebMenu, List<FiiiPay.Enterprise.Web.Models.WebMenu>>
+@if (Model != null)
+{
+    <ul class="metismenu">
+        @foreach (var module in Model)
+        {
+            var controllerName = ViewContext.RouteData.Values["controller"].ToString().ToLower();
+            var actionName = ViewContext.RouteData.Values["action"].ToString().ToLower();
+            string liclassstr1 = (module.Key.CountrollerName.ToLower() == controllerName) ? "active" : "";
+            if (module.Key.HasChild)
+            {
+
+                <li class="@liclassstr1">
+                    <a href="@module.Key.Path" class="has-arrow" aria-expanded=false>
+                        <span class="has-icon">@if (!string.IsNullOrEmpty(module.Key.Icon))
+                        {<i class="@module.Key.Icon"></i>}</span>
+                        <span class="nav-title">@module.Key.Name</span>
+                    </a>
+                    @if (module.Value != null)
+                    {
+                        <ul aria-expanded=false>
+                            @foreach (var item in module.Value)
+                            {
+                                string liclassstr2 = (item.CountrollerName.ToLower() == controllerName && item.ActionName.ToLower() == actionName) ? "active" : "";
+                                <li class="@liclassstr2">
+                                    <a href="@item.Path">@item.Name</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </li>
+            }
+            else
+            {
+                <li class="@liclassstr1">
+                    <a href="@module.Key.Path">
+                        <span class="has-icon">@if (!string.IsNullOrEmpty(module.Key.Icon))
+                        {<i class="@module.Key.Icon"></i>}</span>
+                        <span class="nav-title">@module.Key.Name</span>
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+}

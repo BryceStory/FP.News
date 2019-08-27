@@ -1,0 +1,98 @@
+﻿
+@{
+    ViewBag.Title = "Home Page";
+    ViewBag.PageName = Html.Resource("AccountCommon", "AccountManagement");
+}
+
+@model FiiiPay.Enterprise.Web.Models.AccountSearchModel
+<div class="col-md-1 col-md-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("AccountCommon", "Username")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <input type="text" id="Username" name="Username" class="form-control" placeholder="" />
+</div>
+<div class="col-sm-offset col-sm-6 col-xs-12 butsubmit">
+    <input type="submit" class="f-btn" value="@Html.Resource("Common", "Search")" onclick="GetSystemnotice()" />
+    <input type="submit" class="f-btn" value="@Html.Resource("Common", "Add")" onclick="GoAdd()" />
+</div>
+
+<table class="table" id="NewsTb"></table>
+<script>
+    $(function () {
+
+        var colmodel = ([
+            { name: "Id", title: "Id", titlecn: "用户Id", hidden: true },
+            { name: "Username", title: "Username", titlecn: "用户名", width: 20 },
+            { name: "MerchantName", title: "MerchantName", titlecn: "商户名", width: 20 },
+            { name: "Cellphone", title: "Cellphone", titlecn: "手机号码", width: 20 },
+            { name: "Email", title: "Email", titlecn: "邮箱", width: 20 },
+            {
+                name: "Status", title: "Status", titlecn: "展示状态", formatter: function (v) {
+                    return '<a>' + (v == 0 ? '<span style="color:#606266 !important;">已禁用</span>' : (v == 1 ? '<span style="color:red;">已注册</span>' : '<span style="color:#337ab7;">已启用</span>')) + '</a>';
+                }
+            },
+            {
+                name: "Operate", title: "Operate", titlecn: "操作", formatter: function (k) {
+
+                    var result = '<a  href="javascript:"  onclick="GoEdit(\'' + k + '\')">@Html.Resource("Common","Edit")</a>&nbsp;&nbsp;<a href="javascript:"  onclick="GoDelete(\'' + k + '\')">@Html.Resource("Common","Delete")</a>';
+
+                    return result;
+                }
+            }
+        ]);
+
+        $("#NewsTb").gridpager({
+            url: "~/Account/LoadAccountData",
+            colmodel: colmodel
+        });
+    });
+
+
+    function GetSystemnotice() {
+        var Username = $.trim($("#Username").val());
+        $("#NewsTb").gridpager('refresh', { Username: Username });
+    }
+
+    function GoAdd() {
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/Account/EditAccount?id=00000000-0000-0000-0000-000000000000";
+    }
+
+    function GoEdit(id) {
+        debugger;
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/Account/EditAccount?id=" + id;
+        }
+
+
+    function GoDelete(id) {
+        $.swconfirm("是否确定删除此列", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/Account/DeleteAccount',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "删除成功",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+
+                            swal({
+                                title: "删除失败",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+</script>
+

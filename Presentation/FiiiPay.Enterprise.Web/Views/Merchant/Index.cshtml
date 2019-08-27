@@ -1,0 +1,45 @@
+﻿@model FiiiPay.Enterprise.Web.Models.BaseInfomationModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="f-page">
+    <h3 class="f-sub-pagename">@Html.Resource("MerchantIndex","SubPagename")</h3>
+    <hr />
+    <div class="row">
+        @{
+            string editEmailUrl = "/" + ViewBag.WebLanguage + "/Account/CheckEmail";
+            string editPasswordUrl = "/" + ViewBag.WebLanguage + "/Account/ResetPsw";
+        }
+        <form class="form-horizontal col-sm-6 col-xs-12" role="form">
+            <div class="form-group">
+                @Html.LabelFor(t => t.MerchantId, new { @class = "col-xs-12" })
+                <div class="col-xs-12 col-sm-8">
+                    @Html.TextBoxFor(t => t.MerchantId, new { @class = "form-control", disabled = "disabled" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(t => t.Email, new { @class = "col-xs-12" })
+                <div class="col-xs-12 col-sm-8">
+                    @Html.TextBoxFor(t => t.Email, new { @class = "form-control", disabled = "disabled" })
+                </div>
+                <div class="col-xs-12 col-sm-4">
+                    <div class="f-controlcontainer" style="padding-left:0;">
+                        <a href="@editEmailUrl">@Html.Resource("GeneralResource", "btnEdit")</a>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(t => t.Password, new { @class = "col-xs-12" })
+                <div class="col-xs-12 col-sm-8">
+                    @Html.TextBoxFor(t => t.Password, new { @class = "form-control", disabled = "disabled" })
+                </div>
+                <div class="col-xs-12 col-sm-4">
+                    <div class="f-controlcontainer" style="padding-left:0;">
+                        <a href="@editPasswordUrl">@Html.Resource("GeneralResource", "btnEdit")</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

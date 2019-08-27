@@ -1,0 +1,117 @@
+﻿
+@{
+    ViewBag.Title = "FbPsw";
+    Layout = "~/Views/Shared/_LayoutUnLogin.cshtml";
+}
+@model FiiiPay.Enterprise.Web.Models.FindBackPasswordViewModel
+@using (Html.BeginForm("FbPsw", "Account", new { lang = ViewBag.WebLanguage }, FormMethod.Post, new { role = "form", @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-group" style="margin:80px 0;">
+        <div class="col-sm-offset-2 col-sm-8 col-xs-12">
+            <h3>@Html.Resource("AccountFbPsw", "PageFunction")</h3>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-4 col-xs-12">
+            @Html.TextBoxFor(t => t.Email, new { @class = "form-control", placeholder = Html.Resource("AccountFbPsw", "EmailPlaceholder") })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+        </div>
+        <div class="col-sm-4 col-xs-12">
+            <span>@Html.Resource("AccountFbPsw", "AccountNotBindEmail")</span>
+            <span>
+                <a href="#" onclick="AccountNotBindEmail()">@Html.Resource("AccountFbPsw", "ContactCustmerService")</a>
+            </span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-4 col-xs-12">
+            @Html.PasswordFor(t => t.Password, new { @class = "form-control", placeholder = Html.Resource("AccountFbPsw", "PasswordPlaceholder") })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-4 col-xs-12">
+            @Html.PasswordFor(t => t.ConfirmPassword, new { @class = "form-control", placeholder = Html.Resource("AccountFbPsw", "ConfirmPasswordPlaceholder") })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-4 col-xs-12">
+            <div class="f-input-sendcode">
+                @Html.TextBoxFor(t => t.Code, new { @class = "form-control f-input-code", placeholder = Html.Resource("AccountFbPsw", "CodePlaceholder") })
+                <a class="f-btn-sendcode" href="#" onclick="SendCode(this)">@Html.Resource("GeneralResource", "SendCode")</a>
+            </div>
+            @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div id="validationcontainer" class="col-sm-offset-2 col-sm-4 col-xs-12">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-4 col-xs-12">
+            <input class="f-btn f-btn-max" type="submit" value="@Html.Resource("GeneralResource", "BtnConfirm")" />
+        </div>
+    </div>
+}
+<script>
+    $(function () {
+        var hasset = "@ViewBag.PasswordHasSet";
+        if (hasset === "1") {
+            swal({
+                title: BaseFunction.getresource("accountfbpsw", "setsuccess"),
+                text: BaseFunction.getresource("accountfbpsw", "setsuccessmessage"),
+                type: 'success'
+            }, function () {
+                var lang = BaseFunction.GetLanguage();
+                window.location.href = "/" + lang + "/login";
+            });
+        }
+        else if (hasset === "-1") {
+            swal({
+                title: '',
+                text: initnotice(BaseFunction.getresource("accountfbpsw", "passwordnoticetext")),
+                html: true
+            });
+        }
+    });
+    function AccountNotBindEmail() {
+        swal({
+            title: '',
+            text: initnotice(BaseFunction.getresource("accountfbpsw", "passwordnoticetext")),
+            html: true
+        });
+    }
+    function SendCode(obj) {
+        $("#validationcontainer").empty();
+        if (!$("#Email").valid()) {
+            return;
+        }
+        var email = $.trim($("#Email").val());
+        if (!email) {
+            return;
+        }
+        BaseFunction.SendEmailCode(obj, '/Account/SendFbPswEmailCode', email, function (context) {
+            var htmlStr = '<div class="validation-summary-errors text-danger">';
+            htmlStr += '<ul><li>' + context.Message + '</li></ul ></div >';
+            $("#validationcontainer").append(htmlStr);
+        });
+    }
+    function initnotice(title) {
+        var htmlStr = '<div>';
+        htmlStr += '<div class="f-alert-title">' + title + '</div>';
+        htmlStr += '<div class="f-alert-borders2 clearfix">';
+        htmlStr += '<div class="pull-left f-alert-border">';
+        htmlStr += '<p><span class="f-coin f-icon-phone"></span></p>';
+        htmlStr += '<p>+61 383 766 284</p>';
+        htmlStr += '</div>';
+        htmlStr += '<div class="pull-right f-alert-border">';
+        htmlStr += '<p><span class="f-coin f-icon-mail"></span></p>';
+        htmlStr += '<p>infosz@fiii.io</p>';
+        htmlStr += '</div>';
+        htmlStr += '</div></div>';
+        return htmlStr;
+    }
+</script>

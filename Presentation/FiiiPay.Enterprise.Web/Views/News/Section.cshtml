@@ -1,0 +1,91 @@
+﻿
+@{
+    ViewBag.Title = "Home Page";
+    ViewBag.PageName = Html.Resource("News", "NewsManagement");
+}
+
+@model FiiiPay.Enterprise.Web.Models.NewsViewModel
+<div class="col-md-1 col-md-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("News", "Name")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <input type="text" id="Title" name="Title" class="form-control" placeholder="" />
+</div>
+<div class="col-sm-offset col-sm-6 col-xs-12 butsubmit">
+    <input type="submit" class="f-btn" value="@Html.Resource("News", "Search")" onclick="GetSystemnotice()" />
+    <input type="submit" class="f-btn" value="@Html.Resource("News", "Add")" onclick="GoAdd()" />
+</div>
+
+<table class="table" id="NewsSectionTb"></table>
+<script>
+    $(function () {
+
+        var colmodel = ([
+            { name: "CNName", title: "Chinese Name", titlecn: "中文名称", width: 20 },
+            { name: "ENName", title: "English Name", titlecn: "英文名称", width: 20 },
+            { name: "Id", title: "Sign", titlecn: "标识", width: 20 },
+            { name: "Sort", title: "Sort", titlecn: "排序", width: 20 },
+            { name: "CreateTime", title: "CreateTime", titlecn: "创建时间", width: 20 },
+            {
+                name: "Operate", title: "Operate", titlecn: "操作", formatter: function (k, rowdata) {
+
+                    var result = '<a  href="javascript:"  onclick="GoEdit(\'' + rowdata.Id + '\')">@Html.Resource("Common","Edit")</a>&nbsp;&nbsp;<a href="javascript:"  onclick="GoDelete(\'' + rowdata.Id + '\')">@Html.Resource("Common","Delete")</a>';
+
+                    return result;
+                }
+            }
+        ]);
+
+        $("#NewsSectionTb").gridpager({
+            url: "~/News/LoadSectionData",
+            colmodel: colmodel
+        });
+    });
+
+
+    function GetSystemnotice() {
+        var Title = $.trim($("#Title").val());
+        //var Status = $.trim($("#Status").val());
+        $("#NewsSectionTb").gridpager('refresh', { Title: Title });
+    }
+
+    function GoAdd() {
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/News/SectionEdit?Id=-1";
+    }
+
+     function GoEdit(id) {
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/News/SectionEdit?Id=" + id;
+    }
+
+    function GoDelete(id) {
+        $.swconfirm("确定删除专栏？", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/News/DeleteNewsSection',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "删除成功",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+
+                            swal({
+                                title: "删除失败",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+</script>
+

@@ -1,0 +1,49 @@
+﻿@model FiiiPay.Enterprise.Web.Models.ResetEmailOldViewModel
+@{
+    ViewBag.Title = "CheckEmail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="f-page">
+    <h3 class="f-sub-pagename">@Html.Resource("AccountResetEmail", "SubPageName")</h3>
+    <hr />
+    @using (Html.BeginForm("CheckEmail", "Account", new { lang = ViewBag.WebLanguage }, FormMethod.Post, new { role = "form", style = "max-width:380px;" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            @Html.LabelFor(t => t.Email)
+            @Html.TextBoxFor(t => t.Email, new { @class = "form-control", placeholder = Html.Resource("AccountResetEmail", "OriginalEmailPlaceholder") })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(t => t.Code)
+            <div class="f-input-sendcode">
+                @Html.TextBoxFor(t => t.Code, new { @class = "form-control f-input-code", placeholder = Html.Resource("AccountResetEmail", "CodePlaceholder") })
+                <a class="f-btn-sendcode" href="#" onclick="SendCode(this)">@Html.Resource("GeneralResource", "SendCode")</a>
+            </div>
+            @Html.ValidationMessageFor(m => m.Code, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group" id="validationcontainer">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        </div>
+        <div class="form-group" style="margin-top:40px;">
+            <input class="f-btn f-btn-normal" type="submit" value="@Html.Resource("AccountResetEmail", "btnNext")" />
+        </div>
+    }
+</div>
+<script>
+    function SendCode(obj) {
+        $("#validationcontainer").empty();
+        if (!$("#Email").valid()) {
+            return;
+        }
+        var email = $.trim($("#Email").val());
+        if (!email) {
+            return;
+        }
+        BaseFunction.SendEmailCode(obj, '/Account/SendCheckEmailCode', email, function (context) {
+            var htmlStr = '<div class="validation-summary-errors text-danger">';
+            htmlStr += '<ul><li>' + context.Message + '</li></ul ></div >';
+            $("#validationcontainer").append(htmlStr);
+        });
+    }
+</script>

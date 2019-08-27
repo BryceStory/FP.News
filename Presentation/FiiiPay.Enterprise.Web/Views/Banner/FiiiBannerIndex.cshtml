@@ -1,0 +1,171 @@
+﻿@using FiiiPay.Enterprise.Entities;
+@{
+    ViewBag.Title = "Home Page";
+    ViewBag.PageName = @Html.Resource("Banner", "FiiiPageName");
+}
+
+@model FiiiPay.Enterprise.Web.Models.BannerQueryModel
+<div class="col-md-1 col-md-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("NewsFlash", "Title")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <input type="text" id="Title" name="Title" class="form-control" placeholder="" />
+</div>
+<div class="col-md-1 col-md-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("Banner", "Version")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <select class="form-control" id="Version" name="Version">
+        <option>@Html.Resource("Banner", "VerSionAll")</option>
+        <option value="@((int)BannerVersion.CN)">@Html.Resource("Banner", "VersionCN")</option>
+        <option value="@((int)BannerVersion.EN)">@Html.Resource("Banner", "VersionEN")</option>
+    </select>
+</div>
+
+<div class="col-sm-offset col-sm-6 col-xs-12 butsubmit">
+    <input type="submit" class="f-btn" value="@Html.Resource("Common","Search")" onclick="GetSystemnotice()" />
+    <input type="submit" class="f-btn" value="@Html.Resource("Common","Add")" onclick="GoAdd()" />
+</div>
+
+<table class="table" id="FiiiBannerTb"></table>
+<script>
+    $(function () {
+
+        var colmodel = ([
+            { name: "Id", title: "Id", titlecn: "文章Id", hidden: true },
+            { name: "Title", title: "Title", titlecn: "图片标题", width: 20 },
+            { name: "Sort", title: "Sort", titlecn: "排序", width: 20 },
+             { name: "Version", title: "Version", titlecn: "版本", width: 20 },
+            {
+                name: "Status", title: "Status", titlecn: "展示状态", formatter: function (v) {
+                    return '<a>' + (v == 1 ? '<span style="color:#337ab7;">@Html.Resource("Common","Published")</span>' : '<span style="color:red;">@Html.Resource("Common","Unpublished")</span>') + '</a>';
+                }
+            },
+            { name: "CreateTime", title: "CreateTime", titlecn: "创建时间", width: 20 },
+            {
+                name: "Operate", title: "Operate", titlecn: "操作", formatter: function (k, rowdata) {
+              
+                    var result = '<a  href="javascript:"' + (k == 1 ? 'style="pointer-events:none;color:#606266 !important;"' : '')
+                        + ' onclick="GoEdit(\'' + rowdata.Id + '\')">@Html.Resource("Common","Edit")</a> <a href="javascript:" ' + (k == 1 ? 'onclick = "GoUnpublished(\'' + rowdata.Id + '\')" > @Html.Resource("Common","GoUnpublished")' : 'onclick = "GoPublished(\'' + rowdata.Id + '\')" > @Html.Resource("Common","GoPublished")')
+                        + '</a >  <a href="javascript:"  onclick="GoDelete(\'' + rowdata.Id + '\')">@Html.Resource("Common","Delete")</a>';
+
+                    return result;
+                }
+            }
+        ]);
+
+        $("#FiiiBannerTb").gridpager({
+            url: "~/Banner/LoadFiiiData",
+            colmodel: colmodel
+        });
+    });
+
+
+    function GetSystemnotice() {
+        var Title = $.trim($("#Title").val());
+        var Version = $.trim($("#Version").val());
+        $("#FiiiBannerTb").gridpager('refresh', { Title: Title, Version: Version });
+    }
+
+    function GoAdd() {
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/Banner/FiiiBanner?Id=-1";
+    }
+
+    function GoEdit(id) {
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/Banner/FiiiBanner?Id=" + id;
+    }
+
+    function GoUnpublished(id) {
+        $.swconfirm("确定下架Banner？", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/Banner/Unpublished',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "下架成功",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+                         
+                            swal({
+                                title: "下架失败",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+    function GoPublished(id) {
+        $.swconfirm("确定上架Banner？", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/Banner/Published',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "上架成功",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+                      
+                            swal({
+                                title: "上架失败",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+    function GoDelete(id) {
+        $.swconfirm("确定删除Banner？", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/Banner/Delete',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "删除成功",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+                     
+                            swal({
+                                title: "删除失败",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+</script>
+

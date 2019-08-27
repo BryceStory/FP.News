@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    ViewBag.PageName = "Transactionrecord";
+}
+@model FiiiPay.Enterprise.Web.Models.OrderViewModel
+<div class="col-md-1 col-md-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("TradingRecord", "TrasactionID")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <input type="text" id="OrderNo" name="OrderNo" class="form-control" placeholder="" />
+</div>
+<div class="col-sm-offset col-sm-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("TradingRecord", "UserAccount")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <input type="text" id="UserName" name="UserName" class="form-control" placeholder="" />
+</div>
+<div class="col-sm-offset col-sm-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("TradingRecord", "TransactionStatus")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <select class="form-control" data-live-search="true" id="Status" name="Status">
+        <option>全部</option>
+        <option>已完成</option>
+        <option>已退款</option>
+    </select>
+    @*<input type="text" id="Status" name="Status" class="form-control" placeholder="" />*@
+</div>
+<div class="col-sm-offset col-sm-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("TradingRecord", "Time")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <input type="text" id="dateranger" class="timeinput" />
+</div>
+<div class="col-sm-offset col-sm-3 col-xs-12 butsubmit">
+    <input type="submit" class="f-btn" value="@Html.Resource("TradingRecord", "Seek")" onclick="GetSystemnotice()" />
+    <input type="submit" class="f-btn" value="@Html.Resource("TradingRecord", "DeriveExcel")" onclick="" />
+</div>
+<table class="table" id="Trading"></table>
+<script>
+    $(function () {
+        $("#Trading").gridpager({
+            url: "/TradingRecord/LoadData",
+            colmodel: [
+                { name: "orderNo", title: "OrderNo", titlecn: "交易单号", width: 20, hideinxs: true },
+                { name: "userName", title: "UserName", titlecn: "用户账号", width: 20 },
+                { name: "amount", title: "Amount", titlecn: "消费金额", width: 20 },
+                { name: "yimestamp", title: "Timestamp", titlecn: "时间", width: 20 },
+                {
+                    name: "status", title: "Status", titlecn: "交易状态", formatter: function (v) {
+                        return '<a>' + v + '</a>';
+                    }
+                }
+            ]
+        });
+    });
+
+    $('#dateranger').dateranger({
+        //singleDatePicker: true,//true 单个选择器，false 两个选择器
+        //timePicker:true,//可以选择时、分
+        //startDate: moment().format('YYYY-MM-DD HH:mm'),//开始时间
+        //endDate: moment().format('YYYY-MM-DD HH:mm'),//结束时间
+        showDropdowns: false,//设置年、月是否可选择
+        //autoUpdateInput: true,//选择日期后是否自动更新输入框，为true时，初始化会默认选中当前日期，为false时，没有默认值且始终不会更新输入框，需要手动更新
+        minDate: moment('2018-01-01', 'YYYY-MM-DD HH:mm'),//可选择的最小时间
+        maxDate: moment().endOf('year').format('YYYY-MM-DD HH:mm'),//可选择的最大时间
+        format: 'YYYY-MM-DD HH:mm'//日期格式
+    });
+
+    function GetSystemnotice() {
+        var OrderNo = $.trim($("#OrderNo").val());
+        var UserName = $.trim($("#UserName").val());
+        var Status = $.trim($("#Status").val());
+        $("#Trading").gridpager('refresh', { OrderNo: OrderNo, UserName: UserName, Status: Status });
+    }
+
+    function GetSelectedDates() {
+        var result = $('#dateranger').dateranger('getvalues');
+        //---------弹框控件--------------//
+        swal({
+            title: BaseFunction.getresource("accountfirstsetting", "setsuccess"),//---------js获取多语言--------------//
+            text: 'startDate:' + result.startDate + ", endDate:" + result.endDate,
+            type: 'success'
+        });
+    }
+</script>

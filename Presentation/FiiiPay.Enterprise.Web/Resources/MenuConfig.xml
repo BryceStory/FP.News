@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MenuConfig>
+  <Module name="System Setting" namecn="系统设置" icon="fa fa-cogs" controllername="Account">
+    <MenuItem name="Account" namecn="账户管理" controllername="Account" actionname="Index" />
+    <!--<MenuItem name="Role" namecn="角色管理" controllername="AccountRole" actionname="Index" />-->
+    <MenuItem name="Reset Password" namecn="密码重置" controllername="Account" actionname="ResetPsw" />
+  </Module>
+  <Module name="Operation Picture" namecn="运营图片设置" icon="fa fa-file-image-o" controllername="Banner">
+    <MenuItem name="Homepage Banner" namecn="首页页顶主Banner" controllername="Banner" actionname="HomepageBannerIndex" />
+    <MenuItem name="FIII Banner" namecn="Fiii生态页顶Banner" controllername="Banner" actionname="FiiiBannerIndex" />
+    <MenuItem name="News Banner" namecn="新闻小广告Banner" controllername="Banner" actionname="NewsBannerIndex" />
+  </Module>
+  <Module name="News" namecn="新闻管理" icon="fa fa-newspaper-o" controllername="News" >
+    <MenuItem name="News" namecn="新闻发布" controllername="News" actionname="Index" />
+    <MenuItem name="Section" namecn="专栏管理" controllername="News" actionname="Section" />
+  </Module>
+  <Module name="NewsFlash" namecn="快讯管理" icon="fa fa-file-text-o" controllername="NewsFlash" actionname="Index"></Module>
+  <Module name="Subscriber" namecn="订阅者管理" icon="fa fa-address-book" controllername="Subscriber" actionname="Index"></Module>
+
+</MenuConfig>

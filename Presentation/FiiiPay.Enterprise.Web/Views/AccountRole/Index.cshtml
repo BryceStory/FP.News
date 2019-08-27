@@ -1,0 +1,100 @@
+﻿
+@{
+    ViewBag.Title = "Home Page";
+    ViewBag.PageName = Html.Resource("AccountCommon", "AccountRoleManagement");
+}
+
+@model FiiiPay.Enterprise.Web.Models.NewsViewModel
+<div class="col-md-1 col-md-1 margin5">
+    <div><p class="f-login-webname">@Html.Resource("AccountCommon", "Rolename")</p></div>
+</div>
+<div class="col-sm-offset col-sm-1 col-xs-10 margininput">
+    <input type="text" id="Rolename" name="Rolename" class="form-control" placeholder="" />
+</div>
+<div class="col-sm-offset col-sm-6 col-xs-12 butsubmit">
+    <input type="submit" class="f-btn" value="@Html.Resource("Common", "Search")" onclick="GetSystemnotice()" />
+    <input type="submit" class="f-btn" value="@Html.Resource("Common", "Add")" onclick="GoAdd()" />
+</div>
+
+<table class="table" id="AccountRoleTb"></table>
+<script>
+    $(function () {
+
+        var colmodel = ([
+            { name: "Id", title: "Id", titlecn: "角色Id", hidden: true },
+            { name: "RoleName", title: "RoleName", titlecn: "角色名", width: 20 },
+            { name: "Description", title: "Description", titlecn: "描述", width: 20 },
+            { name: "CreateTime", title: "CreateTime", titlecn: "创建时间", width: 20 },
+            {
+                name: "Authorize", title: "Authorize", titlecn: "授权", width: 20, formatter: function (k) {
+
+                    var result = '<a href="javascript:" class="btn btn-primary btn-xs"  onclick="GoRolePermissionPage(\'' + k + '\')">@Html.Resource("AccountCommon","Authorize")</a>';
+
+                    return result;
+                }
+            },
+            {
+                name: "Operate", title: "Operate", titlecn: "操作", formatter: function (k) {
+
+                    var result = '<a  href="javascript:"  onclick="GoEdit(\'' + k + '\')">@Html.Resource("Common","Edit")</a>&nbsp;&nbsp;<a href="javascript:"  onclick="GoDelete(\'' + k + '\')">@Html.Resource("Common","Delete")</a>';
+
+                    return result;
+                }
+            }
+        ]);
+
+        $("#AccountRoleTb").gridpager({
+            url: "~/AccountRole/LoadRoleData",
+            colmodel: colmodel
+        });
+    });
+
+
+    function GetSystemnotice() {
+        var Rolename = $.trim($("#Rolename").val());
+        $("#AccountRoleTb").gridpager('refresh', { RoleName: Rolename });
+    }
+
+    function GoAdd() {
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/AccountRole/Create";
+    }
+
+    function GoEdit(id) {
+        debugger;
+        window.location.href = "/" + BaseFunction.GetLanguage() + "/AccountRole/Edit?id=" + id;
+        }
+
+
+    function GoDelete(id) {
+        $.swconfirm("@Html.Resource("Common","DeleteNote")", function (isconfirm) {
+            if (isconfirm) {
+                $.ajax({
+                    url: '/AccountRole/DeleteRole',
+                    type: 'post',
+                    data: { id: id },
+                    dataType: "json",
+                    success: function (context) {
+                        if (context.Status) {
+                            swal({
+                                title: "@Html.Resource("Common","SaveSuccess")",
+                                type: "success"
+                            }, function () {
+                                GetSystemnotice();
+                            });
+                        }
+                        else {
+
+                            swal({
+                                title: "@Html.Resource("Common","SaveFailed")",
+                                type: "error",
+                                text: context.Message
+                            });
+                        }
+                    }
+                })
+            }
+        });
+    }
+
+</script>
+
